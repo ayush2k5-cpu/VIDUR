@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIDUR - Premium Venue QR Codes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0C0C0E;
+            --gold: #E8A020;
+            --gold-dim: #C8A850;
+            --text-light: #F0ECE4;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .qr-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--gold-dim);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            page-break-inside: avoid;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        /* Corner brackets decoration */
+        .qr-card::before, .qr-card::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gold);
+            border-radius: 8px;
+            opacity: 0.5;
+        }
+        .qr-card::before {
+            top: 20px; left: 20px;
+            border-right: none; border-bottom: none;
+        }
+        .qr-card::after {
+            bottom: 20px; right: 20px;
+            border-left: none; border-top: none;
+        }
+
+        .logo {
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border: 8px solid #fff; /* White border for scanning contrast */
+            border-radius: 16px;
+            background: #fff;
+        }
+        .label {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-top: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .id {
+            font-family: monospace;
+            font-size: 12px;
+            color: rgba(240, 236, 228, 0.5);
+            margin-top: 12px;
+        }
+        @media print {
+            body { padding: 0; background: none; }
+            h1, p.no-print { display: none; }
+            .grid { gap: 20px; }
+            .qr-card { 
+                box-shadow: none; 
+                border-color: #000;
+                background-color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .logo { color: #E8A020 !important; }
+            .label { color: #fff !important; }
+        }
+    </style>
+</head>
+<body>
+    <h1>VIDUR Premium Scanning Cards</h1>
+    <p class="no-print">Press <b>Ctrl+P</b> or <b>Cmd+P</b>. Ensure "Background Graphics" is enabled in print settings for the dark theme to show.</p>
+    
+    <div class="grid" id="qr-container"></div>
+
+    <script>
+        const waypoints = [
+            { id: "waypoint_entrance", label: "Main Entrance" },
+            { id: "waypoint_corridor_1", label: "Corridor 1" },
+            { id: "waypoint_hanging_001", label: "Hanging Obst." },
+            { id: "waypoint_junction", label: "Junction" },
+            { id: "waypoint_lab_door", label: "Lab Door" },
+            { id: "waypoint_destination", label: "Destination" }
+        ];
+
+        const container = document.getElementById('qr-container');
+
+        waypoints.forEach(wp => {
+            const payload = JSON.stringify({ id: wp.id });
+
+            const card = document.createElement('div');
+            card.className = 'qr-card';
+
+            const logo = document.createElement('div');
+            logo.className = 'logo';
+            logo.textContent = 'VIDUR';
+
+            const canvas = document.createElement('canvas');
+            
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'label';
+            labelDiv.textContent = wp.label;
+
+            const idDiv = document.createElement('div');
+            idDiv.className = 'id';
+            idDiv.textContent = wp.id;
+
+            card.appendChild(logo);
+            card.appendChild(canvas);
+            card.appendChild(labelDiv);
+            card.appendChild(idDiv);
+            container.appendChild(card);
+
+            QRCode.toCanvas(canvas, payload, {
+                width: 260,
+                margin: 0,
+                color: {
+                    dark: '#000000',  // High contrast for scanner
+                    light: '#FFFFFF'
+                },
+                errorCorrectionLevel: 'H' 
+            });
+        });
+    </script>
+</body>
+</html>
