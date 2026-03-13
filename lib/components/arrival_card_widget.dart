@@ -62,8 +62,8 @@ class _ArrivalCardWidgetState extends State<ArrivalCardWidget>
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    AppColors.safeGreen.withOpacity(0.18),
-                    AppColors.navigateGold.withOpacity(0.10),
+                    AppColors.safeGreen.withValues(alpha: 0.18),
+                    AppColors.navigateGold.withValues(alpha: 0.10),
                     Colors.transparent,
                   ],
                 ),
@@ -79,7 +79,7 @@ class _ArrivalCardWidgetState extends State<ArrivalCardWidget>
                 const Spacer(flex: 2),
 
                 // Checkmark
-                Icon(
+                const Icon(
                   Icons.check_circle_rounded,
                   color: AppColors.safeGreen,
                   size: 96,

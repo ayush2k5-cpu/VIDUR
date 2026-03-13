@@ -141,7 +141,7 @@ class _MandalaPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final gold = AppColors.navigateGold;
+    const gold = AppColors.navigateGold;
 
     if (state == 'arrived' && arrivalProgress > 0) {
       _paintArrival(canvas, center, gold);
@@ -149,15 +149,15 @@ class _MandalaPainter extends CustomPainter {
     }
 
     // Outer circle — stroke, 30% opacity, radius 120
-    _drawCircle(canvas, center, 120, gold.withOpacity(0.30), stroke: true);
+    _drawCircle(canvas, center, 120, gold.withValues(alpha: 0.30), stroke: true);
     // Middle circle — stroke, 60% opacity, radius 80
-    _drawCircle(canvas, center, 80, gold.withOpacity(0.60), stroke: true);
+    _drawCircle(canvas, center, 80, gold.withValues(alpha: 0.60), stroke: true);
     // Inner circle — fill, 20% opacity, radius 40
-    _drawCircle(canvas, center, 40, gold.withOpacity(0.20), stroke: false);
+    _drawCircle(canvas, center, 40, gold.withValues(alpha: 0.20), stroke: false);
 
     // 8 radial lines from center to outer ring
     final linePaint = Paint()
-      ..color = gold.withOpacity(0.40)
+      ..color = gold.withValues(alpha: 0.40)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -175,7 +175,7 @@ class _MandalaPainter extends CustomPainter {
         center.dy + 80 * math.sin(angle),
       );
       final dotPaint = Paint()
-        ..color = gold.withOpacity(0.70)
+        ..color = gold.withValues(alpha: 0.70)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(dotCenter, 3.5, dotPaint);
     }
@@ -189,14 +189,14 @@ class _MandalaPainter extends CustomPainter {
       final radii = [40.0, 80.0, 120.0];
       final expandedRadius = radii[i] * (1.0 + t * 0.6);
       final opacity = (1.0 - t).clamp(0.0, 1.0);
-      _drawCircle(canvas, center, expandedRadius, gold.withOpacity(opacity * 0.5), stroke: true);
+      _drawCircle(canvas, center, expandedRadius, gold.withValues(alpha: opacity * 0.5), stroke: true);
     }
 
     // Center fills safeGreen
     final greenOpacity = t.clamp(0.0, 1.0);
     _drawCircle(
       canvas, center, 40,
-      AppColors.safeGreen.withOpacity(greenOpacity),
+      AppColors.safeGreen.withValues(alpha: greenOpacity),
       stroke: false,
     );
   }

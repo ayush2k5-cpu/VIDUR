@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>
                   .fadeIn(duration: 800.ms)
                   .shimmer(
                     duration: 1500.ms,
-                    color: AppColors.navigateGold.withOpacity(0.85),
+                    color: AppColors.navigateGold.withValues(alpha: 0.85),
                     angle: 0.3,
                   ),
 
