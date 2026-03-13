@@ -1,70 +1,65 @@
 {
-  "venueId": "test_venue_001",
+  "venueId": "bmsce_001",
   "waypoints": [
     {
-      "id": "wp_entrance",
-      "x": 10.0,
-      "y": 5.0,
+      "id": "waypoint_entrance",
+      "x": 0.0,
+      "y": 0.0,
       "floor": 0,
       "label": "Main Entrance",
       "isHangingObstacle": false
     },
     {
-      "id": "wp_corridor_mid",
-      "x": 20.0,
-      "y": 5.0,
+      "id": "waypoint_corridor_1",
+      "x": 12.0,
+      "y": 0.0,
       "floor": 0,
-      "label": "Corridor Centre",
-      "isHangingObstacle": false
-    },
-    {
-      "id": "wp_corridor_end",
-      "x": 30.0,
-      "y": 5.0,
-      "floor": 0,
-      "label": "Corridor End",
+      "label": "Corridor Section 1",
       "isHangingObstacle": false
     },
     {
       "id": "waypoint_hanging_001",
-      "x": 30.0,
-      "y": 10.0,
+      "x": 24.0,
+      "y": 0.0,
       "floor": 0,
-      "label": null,
+      "label": "Hanging Obstacle Zone",
       "isHangingObstacle": true
     },
     {
-      "id": "wp_hall_right",
+      "id": "waypoint_junction",
       "x": 30.0,
-      "y": 15.0,
+      "y": 0.0,
       "floor": 0,
-      "label": "East Hall",
+      "label": "Corridor Junction",
       "isHangingObstacle": false
     },
     {
-      "id": "wp_hall_mid",
-      "x": 20.0,
-      "y": 15.0,
+      "id": "waypoint_lab_door",
+      "x": 38.0,
+      "y": 0.0,
       "floor": 0,
-      "label": "Hall Centre",
+      "label": "Lab Door",
       "isHangingObstacle": false
     },
     {
-      "id": "wp_exit",
-      "x": 10.0,
-      "y": 15.0,
+      "id": "waypoint_destination",
+      "x": 38.0,
+      "y": 8.0,
       "floor": 0,
-      "label": "Exit",
+      "label": "Destination",
       "isHangingObstacle": false
     }
   ],
   "edges": [
-    { "fromId": "wp_entrance",        "toId": "wp_corridor_mid",   "distanceMeters": 10.0 },
-    { "fromId": "wp_corridor_mid",    "toId": "wp_corridor_end",   "distanceMeters": 10.0 },
-    { "fromId": "wp_corridor_end",    "toId": "waypoint_hanging_001", "distanceMeters": 5.0 },
-    { "fromId": "waypoint_hanging_001", "toId": "wp_hall_right",   "distanceMeters": 5.0  },
-    { "fromId": "wp_hall_right",      "toId": "wp_hall_mid",       "distanceMeters": 10.0 },
-    { "fromId": "wp_hall_mid",        "toId": "wp_exit",           "distanceMeters": 10.0 },
-    { "fromId": "wp_entrance",        "toId": "wp_exit",           "distanceMeters": 14.0 }
+    { "fromId": "waypoint_entrance",      "toId": "waypoint_corridor_1",    "distanceMeters": 12.0 },
+    { "fromId": "waypoint_corridor_1",    "toId": "waypoint_entrance",      "distanceMeters": 12.0 },
+    { "fromId": "waypoint_corridor_1",    "toId": "waypoint_hanging_001",   "distanceMeters": 12.0 },
+    { "fromId": "waypoint_hanging_001",   "toId": "waypoint_corridor_1",    "distanceMeters": 12.0 },
+    { "fromId": "waypoint_hanging_001",   "toId": "waypoint_junction",      "distanceMeters": 6.0  },
+    { "fromId": "waypoint_junction",      "toId": "waypoint_hanging_001",   "distanceMeters": 6.0  },
+    { "fromId": "waypoint_junction",      "toId": "waypoint_lab_door",      "distanceMeters": 8.0  },
+    { "fromId": "waypoint_lab_door",      "toId": "waypoint_junction",      "distanceMeters": 8.0  },
+    { "fromId": "waypoint_lab_door",      "toId": "waypoint_destination",   "distanceMeters": 8.0  },
+    { "fromId": "waypoint_destination",   "toId": "waypoint_lab_door",      "distanceMeters": 8.0  }
   ]
 }
