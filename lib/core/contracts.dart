@@ -9,7 +9,14 @@ class VidurPosition {
   final double x, y;
   final int floor;
   final double confidence; // 0.0–1.0
-  const VidurPosition({required this.x, required this.y, required this.floor, required this.confidence});
+  final String? waypointId; // set when position snaps to a known QR waypoint
+  const VidurPosition({
+    required this.x,
+    required this.y,
+    required this.floor,
+    required this.confidence,
+    this.waypointId,
+  });
 }
 
 class NavigationInstruction {

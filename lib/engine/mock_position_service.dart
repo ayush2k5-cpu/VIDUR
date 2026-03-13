@@ -9,7 +9,9 @@ class MockPositionService implements PositionStream {
     VidurPosition(x: 10.0, y: 5.0,  floor: 0, confidence: 0.9),
     VidurPosition(x: 20.0, y: 5.0,  floor: 0, confidence: 0.9),
     VidurPosition(x: 30.0, y: 5.0,  floor: 0, confidence: 0.9),
-    VidurPosition(x: 30.0, y: 15.0, floor: 0, confidence: 0.9),
+    // index 3 — simulates user reaching the hanging obstacle waypoint
+    VidurPosition(x: 30.0, y: 15.0, floor: 0, confidence: 0.9,
+        waypointId: 'waypoint_hanging_001'),
     VidurPosition(x: 20.0, y: 15.0, floor: 0, confidence: 0.9),
     VidurPosition(x: 10.0, y: 15.0, floor: 0, confidence: 0.9),
   ];

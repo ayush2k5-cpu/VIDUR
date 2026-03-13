@@ -34,7 +34,10 @@ Build lib/voice/qr_scanner_screen.dart:
 - On QR detected: parse JSON payload { "venueId": string, "venueMapUrl": string }
 - Call SessionRepository.createSession(venueId) — import from lib/core/contracts.dart only
 - Show 4-digit PIN in JetBrains Mono Bold 40px color #E8A020 for 3 seconds
-- Then auto-navigate to DestinationInputScreen
+- Then auto-navigate to DestinationInputScreen(engine: navigationEngine)
+  - DestinationInputScreen takes a single required named arg: NavigationEngine engine
+  - NavigationEngine is an abstract class from lib/core/contracts.dart
+  - Use a Riverpod provider to get the NavigationEngine instance
 - One haptic pulse on successful scan (HapticFeedback.mediumImpact)
 - Voice: speak "Session started. PIN is [PIN]. Where would you like to go?" using flutter_tts
 
@@ -46,12 +49,14 @@ Show only new code. No explanations. Output code only.
 You are a Senior Flutter Audio & UX Engineer working on VIDUR, an indoor navigation app for visually impaired users.
 
 Build lib/voice/destination_input_screen.dart:
+- Constructor: DestinationInputScreen({super.key, required NavigationEngine engine})
+  - Store engine as final field. Do not use Riverpod inside this widget.
 - Background #0C0C0E
 - Centered gold (#E8A020) waveform visualizer — 5 vertical bars, animate height 8px-48px using flutter_animate while listening
 - Uses speech_to_text package
 - Auto-starts listening on screen load
 - Spoken destination confirmed → show text in Inter SemiBold 22px color #F0ECE4
-- "Go" button (gold, rounded) → calls NavigationEngine.setDestination(destinationId)
+- "Go" button (gold, rounded) → calls engine.setDestination(destinationId)
 - Import NavigationEngine from lib/core/contracts.dart only
 - Voice feedback via flutter_tts: "Got it. Navigating to [destination]."
 
@@ -144,8 +149,9 @@ You are a Senior Flutter Audio & UX Engineer working on VIDUR.
 Add hanging obstacle mock trigger to lib/navigate/navigate_main_screen.dart.
 
 In the NavigationInstruction stream listener, after processing each instruction:
-- Get current waypoint ID from the position
-- If waypointId == VidurConstants.kHangingObstacleWaypointId (from lib/core/constants.dart):
+- Get current waypoint ID from VidurPosition.waypointId (VidurPosition is from lib/core/contracts.dart)
+- Import the constant: import 'package:vidur/core/constants.dart'; — then reference kHangingObstacleWaypointId directly (it is a top-level const, NOT inside any class)
+- If position.waypointId == kHangingObstacleWaypointId:
   1. AudioService.playHangingObstacleWarning()
   2. Write to Firebase: sessions/{PIN}/hangingObstacleTriggered = true
      Use FirebaseDatabase.instance.ref('sessions/$pin/hangingObstacleTriggered').set(true)
