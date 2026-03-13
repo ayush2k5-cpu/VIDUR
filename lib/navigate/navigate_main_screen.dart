@@ -68,7 +68,7 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     _sessionPin = ref.read(voice_providers.currentSessionPinProvider);
 
     // Wire VolumeButtonService with all four callbacks
-    final sessionRepo = ref.read(voice_providers.sessionRepositoryProvider);
+    final sessionRepo = ref.read(sessionRepositoryProvider);
 
     _volumeService = VolumeButtonService(
       onRepeatInstruction: _repeatInstruction,
@@ -152,7 +152,7 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
       obstaclesAvoided: 0,
     );
     try {
-      final sessionRepo = ref.read(voice_providers.sessionRepositoryProvider);
+      final sessionRepo = ref.read(sessionRepositoryProvider);
       await sessionRepo.fireArrival(stats);
     } catch (_) {
       // silently skip if repo not wired
