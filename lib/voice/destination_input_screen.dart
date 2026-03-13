@@ -7,6 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:vidur/core/contracts.dart';
+import 'package:vidur/navigate/navigate_main_screen.dart';
 import 'package:vidur/theme/theme.dart';
 
 class DestinationInputScreen extends StatefulWidget {
@@ -84,6 +85,11 @@ class _DestinationInputScreenState extends State<DestinationInputScreen> {
     await _tts.speak('Got it. Navigating to $destinationId.');
 
     await widget.engine.setDestination(destinationId);
+
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const NavigateMainScreen()),
+    );
   }
 
   @override

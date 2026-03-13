@@ -55,6 +55,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '14657756849',
     projectId: 'vidur-a105c',
     storageBucket: 'vidur-a105c.firebasestorage.app',
+    databaseURL: 'https://vidur-a105c-default-rtdb.firebaseio.com',
   );
 
   static const FirebaseOptions web = FirebaseOptions(

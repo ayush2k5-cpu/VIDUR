@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:vidur/core/contracts.dart';
 import 'package:vidur/core/providers.dart';
 import 'package:vidur/theme/theme.dart';
 import 'package:vidur/voice/destination_input_screen.dart';
@@ -63,8 +62,8 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
     final String pin;
     try {
       pin = await sessionRepo.createSession(venueId);
-    } catch (e) {
-      // Reset so user can retry
+    } catch (e, st) {
+      debugPrint('createSession FAILED: $e\n$st');
       _scanned = false;
       _controller.start();
       return;
@@ -80,15 +79,14 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
     await _tts.setSpeechRate(1.0);
     await _tts.speak('Session started. PIN is ${pin.split('').join(', ')}. Where would you like to go?');
 
-    // Show PIN for 3 seconds, then navigate
-    await Future.delayed(const Duration(seconds: 3));
+    // Show PIN for 3 seconds; concurrently wait for engine to be ready.
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 3)),
+      ref.read(navigationEngineProvider.future),
+    ]);
     if (!mounted) return;
 
-    final engineAsync = ref.read(navigationEngineProvider);
-    final NavigationEngine engine = engineAsync.maybeWhen(
-      data: (e) => e,
-      orElse: () => throw StateError('NavigationEngine not ready'),
-    );
+    final engine = await ref.read(navigationEngineProvider.future);
 
     if (!mounted) return;
     Navigator.of(context).pushReplacement(

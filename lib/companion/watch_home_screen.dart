@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:math' as math;
 
@@ -15,8 +14,6 @@ import 'help_screen.dart';
 final sessionUpdatesProvider = StreamProvider<SessionState>((ref) {
   return ref.watch(sessionRepositoryProvider).sessionUpdates;
 });
-
-final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 class WatchHomeScreen extends ConsumerStatefulWidget {
   final String pin;
@@ -42,7 +39,6 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _initNotifications();
     _startMovementCheckTimer();
     
     _obstacleSub = FirebaseDatabase.instance
@@ -59,13 +55,6 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
         });
       }
     });
-  }
-
-  Future<void> _initNotifications() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const darwinSettings = DarwinInitializationSettings();
-    const initSettings = InitializationSettings(android: androidSettings, iOS: darwinSettings);
-    await flutterLocalNotificationsPlugin.initialize(initSettings);
   }
 
   void _startMovementCheckTimer() {
@@ -94,21 +83,7 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
   }
 
   Future<void> _sendPauseNotification() async {
-    const androidDetails = AndroidNotificationDetails(
-      'watch_channel',
-      'Watch Notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    const darwinDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(android: androidDetails, iOS: darwinDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'Alert',
-      'Your person has stopped moving',
-      details,
-    );
+    // TODO: use Firebase Messaging instead
   }
 
   @override

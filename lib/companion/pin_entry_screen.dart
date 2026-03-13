@@ -205,11 +205,39 @@ class _PinEntryScreenState extends ConsumerState<PinEntryScreen> {
                       ),
               ),
               const SizedBox(height: 16),
+
+              TextButton(
+                onPressed: _isLoading ? null : _onMockTestPressed,
+                child: const Text(
+                  'DEV: Mock Help Test',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _onMockTestPressed() async {
+    setState(() => _isLoading = true);
+    try {
+      final pin = await ref.read(sessionRepositoryProvider).createSession('bmsce_001');
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => WatchHomeScreen(pin: pin)),
+      );
+    } catch (e) {
+      _triggerError('Mock failed');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Widget _buildNumberButton(int number) {
