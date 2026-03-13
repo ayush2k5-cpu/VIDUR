@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vidur/theme/theme.dart';
 import 'package:vidur/engine/fingerprint_collector_screen.dart';
 import 'package:vidur/companion/pin_entry_screen.dart';
+import 'package:vidur/voice/qr_scanner_screen.dart';
 
 class ModeSelectScreen extends StatefulWidget {
   final VoidCallback onNavigatorSelected;
@@ -31,7 +32,12 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
   void _onNavigatorTap() {
     setState(() => _leftExpanding = true);
     Future.delayed(const Duration(milliseconds: 400), () {
-      widget.onNavigatorSelected();
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const QrScannerScreen()),
+      ).then((_) {
+        if (mounted) setState(() => _leftExpanding = false);
+      });
     });
   }
 

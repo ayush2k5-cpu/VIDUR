@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:vidur/companion/session_repository_impl.dart' hide sessionRepositoryProvider;
+import 'package:vidur/core/providers.dart';
 import 'package:vidur/theme/theme.dart';
 import 'package:vidur/components/splash_screen.dart';
 import 'package:vidur/components/mode_select_screen.dart';
@@ -9,7 +12,16 @@ import 'package:vidur/components/mode_select_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ProviderScope(child: VidurApp()));
+  // Required by flutter_foreground_task — must be called before runApp.
+  FlutterForegroundTask.initCommunicationPort();
+  runApp(
+    ProviderScope(
+      overrides: [
+        sessionRepositoryProvider.overrideWithValue(SessionRepositoryImpl()),
+      ],
+      child: const VidurApp(),
+    ),
+  );
 }
 
 class VidurApp extends StatelessWidget {
