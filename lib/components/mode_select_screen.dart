@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vidur/theme/theme.dart';
+import 'package:vidur/engine/fingerprint_collector_screen.dart';
+import 'package:vidur/companion/pin_entry_screen.dart';
 
 class ModeSelectScreen extends StatefulWidget {
   final VoidCallback onNavigatorSelected;
@@ -23,6 +25,8 @@ class ModeSelectScreen extends StatefulWidget {
 class _ModeSelectScreenState extends State<ModeSelectScreen> {
   bool _leftExpanding = false;
   bool _rightExpanding = false;
+  int _devTapCount = 0;
+  DateTime? _lastTapTime;
 
   void _onNavigatorTap() {
     setState(() => _leftExpanding = true);
@@ -34,8 +38,31 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
   void _onCompanionTap() {
     setState(() => _rightExpanding = true);
     Future.delayed(const Duration(milliseconds: 400), () {
-      widget.onCompanionSelected();
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const PinEntryScreen()),
+      ).then((_) {
+        // Reset state when coming back
+        if (mounted) setState(() => _rightExpanding = false);
+      });
     });
+  }
+
+  void _onDividerTap() {
+    final now = DateTime.now();
+    if (_lastTapTime == null || now.difference(_lastTapTime!) > const Duration(milliseconds: 500)) {
+       _devTapCount = 0;
+    }
+    
+    _lastTapTime = now;
+    _devTapCount++;
+
+    if (_devTapCount >= 5) {
+      _devTapCount = 0;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const FingerprintCollectorScreen()),
+      );
+    }
   }
 
   @override
@@ -102,10 +129,19 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
             ),
 
             // Divider
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 400),
-              width: (_leftExpanding || _rightExpanding) ? 0 : 1,
-              color: AppColors.border,
+            GestureDetector(
+              onTap: _onDividerTap,
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                width: (_leftExpanding || _rightExpanding) ? 0 : 20,
+                color: Colors.transparent, // Invisible wide hit area
+                alignment: Alignment.center,
+                child: Container(
+                  width: 1,
+                  color: AppColors.border,
+                ),
+              ),
             ),
 
             // RIGHT PANEL — Companion
