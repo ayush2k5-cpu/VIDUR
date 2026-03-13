@@ -1,6 +1,8 @@
 // lib/core/providers.dart — Person 1 owns this file.
 // Riverpod providers for shared engine abstractions.
 // Import alongside contracts.dart — same cross-module rules apply.
+// SessionRepository stub lives here until Priyanshu's FirebaseSessionRepository
+// lands — override in ProviderScope when ready.
 
 import 'dart:convert';
 import 'package:flutter/services.dart';
@@ -36,3 +38,19 @@ final navigationEngineProvider = FutureProvider<NavigationEngine>((ref) async {
   ref.onDispose(() => engine.dispose());
   return engine;
 });
+
+/// Stub — replaced by Priyanshu via ProviderScope.overrides in branch/companion.
+/// Usage: ref.watch(sessionRepositoryProvider)
+final sessionRepositoryProvider = Provider<SessionRepository>((ref) {
+  return _StubSessionRepository();
+});
+
+class _StubSessionRepository implements SessionRepository {
+  @override Future<String> createSession(String venueId) => throw UnimplementedError('stub');
+  @override Future<bool> joinSession(String pin) => throw UnimplementedError('stub');
+  @override Stream<SessionState> get sessionUpdates => throw UnimplementedError('stub');
+  @override Future<void> updatePosition(VidurPosition position) => throw UnimplementedError('stub');
+  @override Future<void> fireHelp() => throw UnimplementedError('stub');
+  @override Future<void> fireArrival(SessionStats stats) => throw UnimplementedError('stub');
+  @override Future<void> requestPeek(PeekRequester requester) => throw UnimplementedError('stub');
+}
