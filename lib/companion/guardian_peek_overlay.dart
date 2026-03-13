@@ -19,7 +19,6 @@ class GuardianPeekOverlay extends StatefulWidget {
 
 class _GuardianPeekOverlayState extends State<GuardianPeekOverlay> {
   int _remoteUid = 0;
-  bool _localUserJoined = false;
   late RtcEngine _engine;
   int _timeLeft = 60;
   Timer? _timer;
@@ -40,11 +39,7 @@ class _GuardianPeekOverlayState extends State<GuardianPeekOverlay> {
     _engine.registerEventHandler(
       RtcEngineEventHandler(
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          if (mounted) {
-            setState(() {
-              _localUserJoined = true;
-            });
-          }
+          // _localUserJoined was removed as it was unused.
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           if (mounted) {

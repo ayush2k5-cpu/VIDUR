@@ -9,7 +9,6 @@ import 'dart:math' as math;
 import '../components/orb_widget.dart';
 import '../components/arrival_card_widget.dart';
 import '../core/contracts.dart';
-import '../core/constants.dart';
 import 'session_repository_impl.dart';
 import 'help_screen.dart';
 
@@ -63,10 +62,10 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
   }
 
   Future<void> _initNotifications() async {
-    final androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final darwinSettings = DarwinInitializationSettings();
-    final initSettings = InitializationSettings(android: androidSettings, iOS: darwinSettings);
-    await flutterLocalNotificationsPlugin.initialize(settings: initSettings);
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const darwinSettings = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(android: androidSettings, iOS: darwinSettings);
+    await flutterLocalNotificationsPlugin.initialize(initSettings);
   }
 
   void _startMovementCheckTimer() {
@@ -105,10 +104,10 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
     const details = NotificationDetails(android: androidDetails, iOS: darwinDetails);
 
     await flutterLocalNotificationsPlugin.show(
-      id: 0,
-      title: 'Alert',
-      body: 'Your person has stopped moving',
-      notificationDetails: details,
+      0,
+      'Alert',
+      'Your person has stopped moving',
+      details,
     );
   }
 
@@ -229,17 +228,6 @@ class _WatchHomeScreenState extends ConsumerState<WatchHomeScreen> {
   }
 
   Widget _buildTopSection() {
-    bool componentsReady = true; 
-    
-    if (!componentsReady) {
-      return Container(
-        width: 150,
-        height: 150,
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFC8A850), width: 2),
-        ),
-      );
-    }
     
     if (_localOrbState == OrbState.arrived) {
       return const ArrivalCardWidget(stats: SessionStats(distanceMeters: 0, duration: Duration.zero, obstaclesAvoided: 0));
