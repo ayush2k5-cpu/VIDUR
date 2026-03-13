@@ -185,11 +185,11 @@ class _DestinationInputScreenState extends State<DestinationInputScreen> {
                         border: Border.all(
                           color: _isListening
                               ? AppColors.navigateGold
-                              : AppColors.textSecondary.withValues(alpha: 0.4),
+                              : AppColors.textSecondary.withOpacity(0.4),
                           width: 1.5,
                         ),
                         color: _isListening
-                            ? AppColors.navigateGold.withValues(alpha: 0.12)
+                            ? AppColors.navigateGold.withOpacity(0.12)
                             : Colors.transparent,
                       ),
                       child: Icon(
@@ -215,7 +215,7 @@ class _DestinationInputScreenState extends State<DestinationInputScreen> {
                         decoration: BoxDecoration(
                           color: _recognizedText.isNotEmpty && !_navigating
                               ? AppColors.navigateGold
-                              : AppColors.navigateGold.withValues(alpha: 0.25),
+                              : AppColors.navigateGold.withOpacity(0.25),
                           borderRadius: BorderRadius.circular(AppSpacing.radiusXL),
                         ),
                         alignment: Alignment.center,

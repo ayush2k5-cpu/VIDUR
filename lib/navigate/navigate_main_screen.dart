@@ -26,6 +26,7 @@ import 'package:vidur/core/providers.dart';
 import 'package:vidur/theme/theme.dart';
 import 'package:vidur/voice/audio_service.dart';
 import 'package:vidur/voice/providers.dart' as voice_providers;
+import 'package:vidur/voice/navigation_foreground_service.dart';
 import 'package:vidur/voice/volume_button_service.dart';
 
 class NavigateMainScreen extends ConsumerStatefulWidget {
@@ -84,6 +85,9 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     // Subscribe to navigation instructions
     final engine = await ref.read(navigationEngineProvider.future);
     _instructionSub = engine.instructions.listen(_onInstruction);
+
+    // Phase 5 — keep navigation alive when backgrounded
+    await NavigationForegroundService.startService();
   }
 
   // ── Instruction handler ───────────────────────────────────────────────────────
@@ -105,7 +109,8 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
       });
     }
 
-    // Audio — speak + spatial tone
+    // Audio — speak + spatial tone; keep foreground service notification in sync
+    NavigationForegroundService.updateInstruction(instruction.spokenText);
     await _audio.speak(instruction.spokenText);
     await _audio.playBinaural(instruction.bearingDegrees);
 
@@ -176,6 +181,7 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     _instructionSub?.cancel();
     _positionSub?.cancel();
     _audio.dispose();
+    NavigationForegroundService.stopService();
     super.dispose();
   }
 
@@ -239,7 +245,7 @@ class _DistancePill extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXL),
         border: Border.all(
-          color: AppColors.navigateGold.withValues(alpha: 0.35),
+          color: AppColors.navigateGold.withOpacity(0.35),
         ),
       ),
       child: Text(
@@ -270,8 +276,8 @@ class _InstructionPanel extends StatelessWidget {
           end: Alignment.topCenter,
           colors: [
             AppColors.background,
-            AppColors.background.withValues(alpha: 0.92),
-            AppColors.background.withValues(alpha: 0.0),
+            AppColors.background.withOpacity(0.92),
+            AppColors.background.withOpacity(0.0),
           ],
         ),
       ),

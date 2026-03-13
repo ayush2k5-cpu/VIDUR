@@ -122,7 +122,7 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
                 radius: 0.85,
                 colors: [
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withOpacity(0.55),
                 ],
               ),
             ),
@@ -156,9 +156,9 @@ class _QrScannerScreenState extends ConsumerState<QrScannerScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
                 decoration: BoxDecoration(
-                  color: AppColors.background.withValues(alpha: 0.85),
+                  color: AppColors.background.withOpacity(0.85),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusM),
-                  border: Border.all(color: AppColors.navigateGold.withValues(alpha: 0.4)),
+                  border: Border.all(color: AppColors.navigateGold.withOpacity(0.4)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
