@@ -9,8 +9,14 @@ import 'package:vidur/theme/theme.dart';
 class OrbWidget extends StatefulWidget {
   final OrbState state;
   final double size;
+  final bool isCompanionView;
 
-  const OrbWidget({super.key, required this.state, this.size = 200});
+  const OrbWidget({
+    super.key,
+    required this.state,
+    this.size = 200,
+    this.isCompanionView = false,
+  });
 
   @override
   State<OrbWidget> createState() => _OrbWidgetState();
@@ -21,8 +27,6 @@ class _OrbWidgetState extends State<OrbWidget>
   late AnimationController _breathController;
   late AnimationController _transitionController;
   late AnimationController _ringController;
-  late Animation<double> _scaleAnim;
-  late Animation<double> _opacityAnim;
 
   OrbState _currentState = OrbState.safe;
 
@@ -59,6 +63,7 @@ class _OrbWidgetState extends State<OrbWidget>
 
   void _applyState(OrbState state, {bool initial = false}) {
     _breathController.stop();
+    _ringController.stop();
 
     switch (state) {
       case OrbState.safe:
@@ -82,28 +87,35 @@ class _OrbWidgetState extends State<OrbWidget>
   Color get _orbColor {
     switch (_currentState) {
       case OrbState.safe:
+        return AppColors.navigateGold;   // #E8A020 — bright gold
       case OrbState.paused:
-        return AppColors.watchGold;
+        return AppColors.watchGold;      // #C8A850 — dim gold
       case OrbState.help:
-        return AppColors.alertRed;
+        return AppColors.alertRed;       // #E53935 — urgent red
       case OrbState.arrived:
-        return AppColors.safeGreen;
+        return AppColors.safeGreen;      // #4CAF50 — celebratory green
     }
   }
 
   Color get _glowColor {
     switch (_currentState) {
       case OrbState.safe:
+        return AppColors.navigateGold.withValues(alpha: 0.30);
       case OrbState.paused:
-        return AppColors.watchGold.withOpacity(0.30);
+        return AppColors.watchGold.withValues(alpha: 0.20);
       case OrbState.help:
-        return AppColors.alertRed.withOpacity(0.30);
+        return AppColors.alertRed.withValues(alpha: 0.45);
       case OrbState.arrived:
-        return AppColors.safeGreen.withOpacity(0.30);
+        return AppColors.safeGreen.withValues(alpha: 0.30);
     }
   }
 
   double get _targetOpacity => _currentState == OrbState.paused ? 0.40 : 1.0;
+
+  double get _orbScale {
+    if (_currentState == OrbState.safe && widget.isCompanionView) return 0.65;
+    return 0.70;
+  }
 
   @override
   void dispose() {
@@ -129,6 +141,14 @@ class _OrbWidgetState extends State<OrbWidget>
               painter: _ArrivalRingPainter(_ringController.value, AppColors.safeGreen),
             ),
           ),
+
+        // Paused: static grey outer ring
+        if (_currentState == OrbState.paused)
+          CustomPaint(
+            size: Size(s, s),
+            painter: _StaticRingPainter(AppColors.textSecondary.withValues(alpha: 0.35)),
+          ),
+
         // Main orb body
         AnimatedBuilder(
           animation: _breathController,
@@ -143,17 +163,31 @@ class _OrbWidgetState extends State<OrbWidget>
             opacity: _targetOpacity,
             duration: const Duration(milliseconds: 300),
             child: Container(
-              width: s * 0.7,
-              height: s * 0.7,
+              width: s * _orbScale,
+              height: s * _orbScale,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _orbColor,
+                // Companion safe state: thin gold border ring
+                border: (_currentState == OrbState.safe && widget.isCompanionView)
+                    ? Border.all(
+                        color: AppColors.navigateGold.withValues(alpha: 0.70),
+                        width: 1.5,
+                      )
+                    : null,
                 boxShadow: [
                   BoxShadow(
                     color: _glowColor,
                     blurRadius: 40,
                     spreadRadius: 8,
                   ),
+                  // Help state: second urgent glow layer
+                  if (_currentState == OrbState.help)
+                    BoxShadow(
+                      color: AppColors.alertRed.withValues(alpha: 0.25),
+                      blurRadius: 60,
+                      spreadRadius: 16,
+                    ),
                 ],
               ),
             ),
@@ -184,7 +218,7 @@ class _ArrivalRingPainter extends CustomPainter {
       final radius = maxRadius * 0.3 + (maxRadius * 0.7 * ringProgress);
 
       final paint = Paint()
-        ..color = color.withOpacity(opacity * 0.6)
+        ..color = color.withValues(alpha: opacity * 0.6)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
 
@@ -195,4 +229,26 @@ class _ArrivalRingPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ArrivalRingPainter old) =>
       old.progress != progress || old.color != color;
+}
+
+class _StaticRingPainter extends CustomPainter {
+  final Color color;
+
+  _StaticRingPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 * 0.88;
+
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(_StaticRingPainter old) => old.color != color;
 }

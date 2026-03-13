@@ -12,8 +12,8 @@ class AppColors {
   static const Color border         = Color(0xFF2A2820);
   static const Color navigateGold   = Color(0xFFE8A020);
   static const Color watchGold      = Color(0xFFC8A850);
-  static const Color safeGreen      = Color(0xFF4A9060);
-  static const Color alertRed       = Color(0xFFC04040);
+  static const Color safeGreen      = Color(0xFF4CAF50);
+  static const Color alertRed       = Color(0xFFE53935);
   static const Color textPrimary    = Color(0xFFF0ECE4);
   static const Color textSecondary  = Color(0xFF706860);
 
