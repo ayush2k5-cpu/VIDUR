@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:vidur/theme/theme.dart';
+import 'package:vidur/components/splash_screen.dart';
+import 'package:vidur/components/mode_select_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,14 +20,33 @@ class VidurApp extends StatelessWidget {
     return MaterialApp(
       title: 'VIDUR',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(scaffoldBackgroundColor: Color(0xFF0C0C0E)),
-      // TODO Person 4: Replace with full theme + router
-      home: const Scaffold(
-        backgroundColor: Color(0xFF0C0C0E),
-        body: Center(
-          child: Text('VIDUR', style: TextStyle(color: Color(0xFFE8A020), fontSize: 40)),
-        ),
-      ),
+      theme: AppTheme.appTheme,
+      home: const _AppEntry(),
+    );
+  }
+}
+
+class _AppEntry extends StatefulWidget {
+  const _AppEntry();
+
+  @override
+  State<_AppEntry> createState() => _AppEntryState();
+}
+
+class _AppEntryState extends State<_AppEntry> {
+  bool _splashDone = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_splashDone) {
+      return SplashScreen(
+        onComplete: () => setState(() => _splashDone = true),
+      );
+    }
+    return ModeSelectScreen(
+      // TODO: wire to actual navigator/companion screen routes
+      onNavigatorSelected: () {},
+      onCompanionSelected: () {},
     );
   }
 }
