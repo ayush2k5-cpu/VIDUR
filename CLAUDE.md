@@ -1,103 +1,22 @@
-# VIDUR — PROJECT CONTEXT
-Named after the wisest counselor from the Mahabharata. Indoor navigation for visually impaired. Zero hardware. Flutter, Android 13+ only.
+# VIDUR — ENGINE MODULE
+You are a Senior Flutter Positioning Systems Engineer working on VIDUR.
+Indoor navigation app for visually impaired. You own the positioning brain.
 
 ---
 
-## Architecture
-- **State:** Riverpod only. No Provider, no BLoC, no setState except leaf widgets.
-- **Backend:** Firebase Realtime Database
-- **Video:** Agora RTC (Guardian Peek)
-- **Positioning:** QR Waypoints + PDR + WiFi Fingerprinting — fused into one VidurPosition
-- **Fonts:** Cormorant Garamond (VIDUR wordmark) | Inter (all UI) | JetBrains Mono (PIN/numbers)
+## Your Scope
+`lib/core/` and `lib/engine/` ONLY. Touch nothing else. Ever.
 
 ---
 
-## Color Tokens (never hardcode hex, always use AppTheme)
-```
-background:     #0C0C0E    surface:       #161618
-border:         #2A2820    navigateGold:  #E8A020
-watchGold:      #C8A850    safeGreen:     #4A9060
-alertRed:       #C04040    textPrimary:   #F0ECE4
-textSecondary:  #706860
-```
+## Delivery Priority — In This Order. Do Not Skip Ahead.
 
----
+### PRIORITY 0 — contracts.dart (blocks all 3 teammates)
+File: `lib/core/contracts.dart`
+Push to branch/engine the moment it compiles. Teammates cannot start without it.
 
-## Folder Ownership — ABSOLUTE. NEVER CROSS THESE LINES.
-```
-lib/core/        → Person 1 ONLY
-lib/engine/      → Person 1 ONLY
-lib/voice/       → Person 2 ONLY
-lib/navigate/    → Person 2 ONLY
-lib/companion/   → Person 3 ONLY
-lib/components/  → Person 4 ONLY
-lib/theme/       → Person 4 ONLY
-main.dart        → LOCKED
-```
-
----
-
-## Cross-Module Import Rule
-Only import from `lib/core/contracts.dart` across module boundaries.
-Never import from another person's lib/ subfolder.
-Components (lib/components/) are imported by filename only — never modified.
-
----
-
-## Firebase Schema
-```
-sessions/{PIN}/
-  navigatorId, companionId, sessionStart, venueId
-  currentPosition: { x, y, floor }
-  currentInstruction: string
-  orbState: "safe" | "paused" | "help" | "arrived"
-  lastMovement: timestamp
-  stats: { distance, duration, obstaclesAvoided }
-  peekRequest: { active, requestedBy, agoraChannel, startedAt }
-  helpEvent: { fired, firedAt, lastPosition }
-  arrivalEvent: { arrived, arrivedAt }
-  hangingObstacleTriggered: boolean
-```
-
----
-
-## Hanging Obstacle (cross-branch coordination)
-- Shared constant in `lib/core/constants.dart`: `kHangingObstacleWaypointId = 'waypoint_hanging_001'`
-- Person 2 writes `hangingObstacleTriggered: true` to Firebase when triggered
-- Person 3 listens to that field and renders icon on companion map
-- Nobody else touches this field
-
----
-
-## Token Rules — Applies to Every Session
-- Show only changed/new code. Use `// ... rest unchanged` for skipped sections.
-- Never paste a full file. Reference by `filename:lineNumber`.
-- No explanations unless explicitly asked. Output code.
-- One question max per response. Batch all questions.
-- No tests unless asked. No docstrings on unchanged code.
-- When stuck: state the exact blocker in one sentence. Stop.
-
----
-
-## Branch Structure
-```
-main              (locked after scaffold)
-├── branch/engine          → Person 1
-├── branch/voice-navigate  → Person 2
-├── branch/companion       → Person 3
-└── branch/design          → Person 4
-```
-
-## Merge Order (do not deviate)
-1. branch/design → main
-2. branch/engine → main
-3. branch/voice-navigate → main
-4. branch/companion → main
-
----
-
-## Contracts Reference (lib/core/contracts.dart)
 ```dart
+// lib/core/contracts.dart
 abstract class PositionStream {
   Stream<VidurPosition> get positionUpdates;
   Future<void> initialize(VenueMap venue);
@@ -122,7 +41,8 @@ abstract class SessionRepository {
 class VidurPosition {
   final double x, y;
   final int floor;
-  final double confidence; // 0.0–1.0
+  final double confidence;
+  const VidurPosition({required this.x, required this.y, required this.floor, required this.confidence});
 }
 
 class NavigationInstruction {
@@ -130,23 +50,148 @@ class NavigationInstruction {
   final double bearingDegrees;
   final double distanceMeters;
   final InstructionType type;
+  const NavigationInstruction({required this.spokenText, required this.bearingDegrees, required this.distanceMeters, required this.type});
 }
 
 class SessionState {
   final OrbState orbState;
   final VidurPosition? position;
   final String? currentInstruction;
-  final PeekState? peekState;
   final DateTime lastMovement;
+  const SessionState({required this.orbState, this.position, this.currentInstruction, required this.lastMovement});
 }
 
 class SessionStats {
   final double distanceMeters;
   final Duration duration;
   final int obstaclesAvoided;
+  const SessionStats({required this.distanceMeters, required this.duration, required this.obstaclesAvoided});
+}
+
+class VenueMap {
+  final String venueId;
+  final List<Waypoint> waypoints;
+  final List<WaypointEdge> edges;
+  const VenueMap({required this.venueId, required this.waypoints, required this.edges});
+}
+
+class Waypoint {
+  final String id;
+  final double x, y;
+  final int floor;
+  final String? label;
+  final bool isHangingObstacle;
+  const Waypoint({required this.id, required this.x, required this.y, required this.floor, this.label, this.isHangingObstacle = false});
+}
+
+class WaypointEdge {
+  final String fromId, toId;
+  final double distanceMeters;
+  const WaypointEdge({required this.fromId, required this.toId, required this.distanceMeters});
 }
 
 enum OrbState { safe, paused, help, arrived }
 enum InstructionType { turn, straight, arrived, obstacle }
 enum PeekRequester { navigator, companion }
 ```
+
+### PRIORITY 1 — constants.dart
+File: `lib/core/constants.dart`
+```dart
+// lib/core/constants.dart
+class VidurConstants {
+  static const String kHangingObstacleWaypointId = 'waypoint_hanging_001';
+  static const int kPauseThresholdSeconds = 120;
+  static const int kPeekDurationSeconds = 60;
+  static const double kPdrConfidenceDecayPerStep = 0.05;
+  static const double kWifiMatchThreshold = 0.6;
+}
+```
+
+### PRIORITY 2 — MockPositionService (unblocks Granth + Priyanshu)
+File: `lib/engine/mock_position_service.dart`
+- Implements `PositionStream`
+- Emits `VidurPosition` every 2 seconds on a hardcoded 6-point path
+- confidence always 0.9
+- Loop back to start after reaching end
+- Push immediately after contracts.dart. Teammates plug this in same minute.
+
+### PRIORITY 3 — QR Waypoint Service
+File: `lib/engine/qr_waypoint_service.dart`
+- Processes QR scan results from Person 2's scanner (receives waypoint ID string)
+- Returns `VidurPosition` with confidence 1.0
+- Resets PDR drift counter to zero on every successful scan
+- Exposes: `VidurPosition resolveWaypoint(String waypointId, VenueMap venue)`
+
+### PRIORITY 4 — PDR Service
+File: `lib/engine/pdr_service.dart`
+- Uses `sensors_plus` accelerometer for step detection
+- Peak detection on Z-axis for step count
+- Heading from device compass (magnetometer)
+- Confidence starts at 0.85, decays by `kPdrConfidenceDecayPerStep` per step since last QR fix
+- Exposes stream of `VidurPosition`
+
+### PRIORITY 5 — WiFi Fingerprint Service
+File: `lib/engine/wifi_fingerprint_service.dart`
+- Uses `wifi_scan` to get current RSSI list
+- Loads fingerprint database from `assets/venue/fingerprints.json`
+- Match algorithm: Euclidean distance in RSSI space
+- Returns confidence = normalized inverse distance (0.0–1.0)
+- Below `kWifiMatchThreshold`: confidence = 0.0 (don't use this result)
+
+### PRIORITY 6 — Fused Position Service
+File: `lib/engine/fused_position_service.dart`
+- Implements `PositionStream`
+- Wraps QrWaypointService + PdrService + WifiFingerprintService
+- Fusion: `position = weighted_sum(qr * wQR, pdr * wPDR, wifi * wWifi) / totalWeight`
+- Weights = confidence values of each source
+- QR snap: when QR fires (confidence 1.0), it dominates completely and resets others
+- Output: single `VidurPosition` stream at 1Hz
+
+### PRIORITY 7 — Navigation Engine
+File: `lib/engine/navigation_engine.dart`
+- Implements `NavigationEngine`
+- A* pathfinding on `VenueMap.waypoints` + `VenueMap.edges`
+- Subscribes to `FusedPositionService`
+- On position update: find nearest waypoint, compute next instruction
+- `bearingDegrees` = angle from current position to next waypoint (for binaural audio)
+- Instruction types: turn (angle > 20°), straight, arrived (within 2m of destination), obstacle
+
+### PRIORITY 8 — Venue Map
+File: `lib/engine/venue_map.dart`
+- `VenueMap fromJson(Map<String, dynamic> json)` — parses Mappedin export + custom fingerprint overlay
+- `Waypoint? nearestWaypoint(VidurPosition pos)` — finds closest waypoint within 3m radius
+- Tomorrow at venue: generate `assets/venue/venue_map.json` with real coordinates
+
+---
+
+## Positioning Fusion Logic (reference)
+```
+Event: QR Waypoint Scanned
+→ confidence = 1.0 → snap position exactly → reset PDR drift → dominates fusion output
+
+Between QR Scans:
+→ PDR: continuous, confidence decays each step
+→ WiFi: continuous, confidence = match score
+→ fused = (pdr_pos * pdr_conf + wifi_pos * wifi_conf) / (pdr_conf + wifi_conf)
+
+WiFi congested (low match score → confidence < threshold):
+→ PDR carries alone until next QR snap
+```
+
+---
+
+## Your Workflow (Antigravity + Claude parallel)
+- Use **Claude** for: architecture decisions, contracts review, fusion logic
+- Use **Antigravity** for: implementing individual service files
+- Build one service at a time. Test against mock data before moving to next.
+- After each file: `flutter analyze`. Fix all warnings before continuing.
+
+---
+
+## Token Rules
+- Show only changed/new code. `// ... rest unchanged` for skipped blocks.
+- Reference files as `filename:lineNumber`. Never paste full files.
+- No explanations unless asked. Output code.
+- One question max per response.
+- When blocked: one sentence describing the exact blocker. Stop.
