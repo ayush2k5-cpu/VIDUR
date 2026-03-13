@@ -34,6 +34,7 @@ class QrWaypointService implements PositionStream {
         y: waypoint.y,
         floor: waypoint.floor,
         confidence: 1.0,
+        waypointId: waypoint.id,
       ));
     } catch (_) {}
   }
