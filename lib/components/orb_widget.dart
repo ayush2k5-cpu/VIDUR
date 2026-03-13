@@ -100,13 +100,13 @@ class _OrbWidgetState extends State<OrbWidget>
   Color get _glowColor {
     switch (_currentState) {
       case OrbState.safe:
-        return AppColors.navigateGold.withValues(alpha: 0.30);
+        return AppColors.navigateGold.withOpacity(0.30);
       case OrbState.paused:
-        return AppColors.watchGold.withValues(alpha: 0.20);
+        return AppColors.watchGold.withOpacity(0.20);
       case OrbState.help:
-        return AppColors.alertRed.withValues(alpha: 0.45);
+        return AppColors.alertRed.withOpacity(0.45);
       case OrbState.arrived:
-        return AppColors.safeGreen.withValues(alpha: 0.30);
+        return AppColors.safeGreen.withOpacity(0.30);
     }
   }
 
@@ -146,7 +146,7 @@ class _OrbWidgetState extends State<OrbWidget>
         if (_currentState == OrbState.paused)
           CustomPaint(
             size: Size(s, s),
-            painter: _StaticRingPainter(AppColors.textSecondary.withValues(alpha: 0.35)),
+            painter: _StaticRingPainter(AppColors.textSecondary.withOpacity(0.35)),
           ),
 
         // Main orb body
@@ -171,7 +171,7 @@ class _OrbWidgetState extends State<OrbWidget>
                 // Companion safe state: thin gold border ring
                 border: (_currentState == OrbState.safe && widget.isCompanionView)
                     ? Border.all(
-                        color: AppColors.navigateGold.withValues(alpha: 0.70),
+                        color: AppColors.navigateGold.withOpacity(0.70),
                         width: 1.5,
                       )
                     : null,
@@ -184,7 +184,7 @@ class _OrbWidgetState extends State<OrbWidget>
                   // Help state: second urgent glow layer
                   if (_currentState == OrbState.help)
                     BoxShadow(
-                      color: AppColors.alertRed.withValues(alpha: 0.25),
+                      color: AppColors.alertRed.withOpacity(0.25),
                       blurRadius: 60,
                       spreadRadius: 16,
                     ),
@@ -218,7 +218,7 @@ class _ArrivalRingPainter extends CustomPainter {
       final radius = maxRadius * 0.3 + (maxRadius * 0.7 * ringProgress);
 
       final paint = Paint()
-        ..color = color.withValues(alpha: opacity * 0.6)
+        ..color = color.withOpacity(opacity * 0.6)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
 

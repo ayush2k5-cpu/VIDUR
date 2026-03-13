@@ -135,7 +135,7 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
                             colors: [
-                              AppColors.watchGold.withValues(alpha: 0.08),
+                              AppColors.watchGold.withOpacity(0.08),
                               Colors.transparent,
                             ],
                           ),
@@ -185,7 +185,7 @@ class _SubtleRingPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final paint = Paint()
-      ..color = baseColor.withValues(alpha: 0.08)
+      ..color = baseColor.withOpacity(0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 

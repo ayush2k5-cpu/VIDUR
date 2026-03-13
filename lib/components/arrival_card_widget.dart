@@ -62,8 +62,8 @@ class _ArrivalCardWidgetState extends State<ArrivalCardWidget>
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    AppColors.safeGreen.withValues(alpha: 0.18),
-                    AppColors.navigateGold.withValues(alpha: 0.10),
+                    AppColors.safeGreen.withOpacity(0.18),
+                    AppColors.navigateGold.withOpacity(0.10),
                     Colors.transparent,
                   ],
                 ),
