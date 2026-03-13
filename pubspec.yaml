@@ -1,0 +1,65 @@
+name: vidur
+description: Indoor navigation for visually impaired. Zero hardware.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Animations & UI
+  flutter_animate: ^4.5.0
+  animations: ^2.0.11
+  google_fonts: ^6.2.1
+
+  # Firebase
+  firebase_core: ^3.0.0
+  firebase_database: ^11.0.0
+  firebase_messaging: ^15.0.0
+
+  # Video — Guardian Peek
+  agora_rtc_engine: ^6.3.2
+
+  # Voice
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+
+  # Navigation & Scanning
+  mobile_scanner: ^5.0.0
+
+  # Positioning
+  sensors_plus: ^5.0.0        # accelerometer for PDR
+  wifi_scan: ^0.4.1           # WiFi RSSI scanning
+
+  # Audio
+  just_audio: ^0.9.40
+
+  # Foreground Service
+  flutter_foreground_task: ^8.0.0
+
+  # Obstacle Detection
+  tflite_flutter: ^0.10.4
+
+  # Haptics
+  flutter_vibrate: ^1.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.9
+  riverpod_generator: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/models/
+    - assets/fonts/
+    - assets/venue/
