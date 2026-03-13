@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -59,4 +56,15 @@ class DefaultFirebaseOptions {
     projectId: 'vidur-a105c',
     storageBucket: 'vidur-a105c.firebasestorage.app',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBc8jPlcLFmzaFoIn937Bhyv9frckq2OiQ',
+    appId: '1:14657756849:web:070842a34054d5525e8c90',
+    messagingSenderId: '14657756849',
+    projectId: 'vidur-a105c',
+    authDomain: 'vidur-a105c.firebaseapp.com',
+    storageBucket: 'vidur-a105c.firebasestorage.app',
+    measurementId: 'G-7S0KPXBQFV',
+  );
+
 }
