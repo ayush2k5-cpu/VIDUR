@@ -1,0 +1,32 @@
+[
+  {
+    "x": 10.0,
+    "y": 5.0,
+    "floor": 0,
+    "rssi": {
+      "aa:bb:cc:dd:ee:01": -55,
+      "aa:bb:cc:dd:ee:02": -72,
+      "aa:bb:cc:dd:ee:03": -88
+    }
+  },
+  {
+    "x": 20.0,
+    "y": 5.0,
+    "floor": 0,
+    "rssi": {
+      "aa:bb:cc:dd:ee:01": -65,
+      "aa:bb:cc:dd:ee:02": -58,
+      "aa:bb:cc:dd:ee:03": -80
+    }
+  },
+  {
+    "x": 30.0,
+    "y": 5.0,
+    "floor": 0,
+    "rssi": {
+      "aa:bb:cc:dd:ee:01": -82,
+      "aa:bb:cc:dd:ee:02": -60,
+      "aa:bb:cc:dd:ee:03": -55
+    }
+  }
+]

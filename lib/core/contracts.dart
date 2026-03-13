@@ -9,7 +9,14 @@ class VidurPosition {
   final double x, y;
   final int floor;
   final double confidence; // 0.0–1.0
-  const VidurPosition({required this.x, required this.y, required this.floor, required this.confidence});
+  final String? waypointId; // set when position snaps to a known QR waypoint
+  const VidurPosition({
+    required this.x,
+    required this.y,
+    required this.floor,
+    required this.confidence,
+    this.waypointId,
+  });
 }
 
 class NavigationInstruction {
@@ -43,7 +50,27 @@ class SessionStats {
   const SessionStats({required this.distanceMeters, required this.duration, required this.obstaclesAvoided});
 }
 
-abstract class VenueMap {}
+class Waypoint {
+  final String id;
+  final double x, y;
+  final int floor;
+  final String? label;
+  final bool isHangingObstacle;
+  const Waypoint({required this.id, required this.x, required this.y, required this.floor, this.label, this.isHangingObstacle = false});
+}
+
+class WaypointEdge {
+  final String fromId, toId;
+  final double distanceMeters;
+  const WaypointEdge({required this.fromId, required this.toId, required this.distanceMeters});
+}
+
+class VenueMap {
+  final String venueId;
+  final List<Waypoint> waypoints;
+  final List<WaypointEdge> edges;
+  const VenueMap({required this.venueId, required this.waypoints, required this.edges});
+}
 
 abstract class PositionStream {
   Stream<VidurPosition> get positionUpdates;

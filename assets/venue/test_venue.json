@@ -1,0 +1,70 @@
+{
+  "venueId": "test_venue_001",
+  "waypoints": [
+    {
+      "id": "wp_entrance",
+      "x": 10.0,
+      "y": 5.0,
+      "floor": 0,
+      "label": "Main Entrance",
+      "isHangingObstacle": false
+    },
+    {
+      "id": "wp_corridor_mid",
+      "x": 20.0,
+      "y": 5.0,
+      "floor": 0,
+      "label": "Corridor Centre",
+      "isHangingObstacle": false
+    },
+    {
+      "id": "wp_corridor_end",
+      "x": 30.0,
+      "y": 5.0,
+      "floor": 0,
+      "label": "Corridor End",
+      "isHangingObstacle": false
+    },
+    {
+      "id": "waypoint_hanging_001",
+      "x": 30.0,
+      "y": 10.0,
+      "floor": 0,
+      "label": null,
+      "isHangingObstacle": true
+    },
+    {
+      "id": "wp_hall_right",
+      "x": 30.0,
+      "y": 15.0,
+      "floor": 0,
+      "label": "East Hall",
+      "isHangingObstacle": false
+    },
+    {
+      "id": "wp_hall_mid",
+      "x": 20.0,
+      "y": 15.0,
+      "floor": 0,
+      "label": "Hall Centre",
+      "isHangingObstacle": false
+    },
+    {
+      "id": "wp_exit",
+      "x": 10.0,
+      "y": 15.0,
+      "floor": 0,
+      "label": "Exit",
+      "isHangingObstacle": false
+    }
+  ],
+  "edges": [
+    { "fromId": "wp_entrance",        "toId": "wp_corridor_mid",   "distanceMeters": 10.0 },
+    { "fromId": "wp_corridor_mid",    "toId": "wp_corridor_end",   "distanceMeters": 10.0 },
+    { "fromId": "wp_corridor_end",    "toId": "waypoint_hanging_001", "distanceMeters": 5.0 },
+    { "fromId": "waypoint_hanging_001", "toId": "wp_hall_right",   "distanceMeters": 5.0  },
+    { "fromId": "wp_hall_right",      "toId": "wp_hall_mid",       "distanceMeters": 10.0 },
+    { "fromId": "wp_hall_mid",        "toId": "wp_exit",           "distanceMeters": 10.0 },
+    { "fromId": "wp_entrance",        "toId": "wp_exit",           "distanceMeters": 14.0 }
+  ]
+}
