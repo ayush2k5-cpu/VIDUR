@@ -58,11 +58,6 @@ class _DestinationInputScreenState extends State<DestinationInputScreen> {
           setState(() => _recognizedText = result.recognizedWords);
         }
       },
-      listenOptions: SpeechListenOptions(
-        cancelOnError: true,
-        partialResults: true,
-        listenMode: ListenMode.dictation,
-      ),
     );
   }
 
@@ -77,11 +72,11 @@ class _DestinationInputScreenState extends State<DestinationInputScreen> {
 
     await _stopListening();
 
-    // Use spoken text as destinationId (real engines can normalise downstream)
-    final destinationId = _recognizedText.trim();
+    // Normalize spoken text to match the raw JSON id field (e.g. "destination")
+    final destinationId = _recognizedText.trim().toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '');
 
     await _tts.setLanguage('en-US');
-    await _tts.setSpeechRate(1.0);
+    await _tts.setSpeechRate(0.45);
     await _tts.speak('Got it. Navigating to $destinationId.');
 
     await widget.engine.setDestination(destinationId);

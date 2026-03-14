@@ -37,6 +37,7 @@ dependencies:
 
   # Audio
   just_audio: ^0.9.40
+  path_provider: ^2.1.0
 
   # Foreground Service
   flutter_foreground_task: ^8.0.0
@@ -45,6 +46,7 @@ dependencies:
   tflite_flutter: ^0.10.4
 
   url_launcher: 6.3.1
+  agora_rtc_engine: ^6.5.3
 
 dev_dependencies:
   flutter_test:

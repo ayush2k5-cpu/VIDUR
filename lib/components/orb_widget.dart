@@ -35,8 +35,7 @@ class _OrbWidgetState extends State<OrbWidget>
     super.initState();
     _currentState = widget.state;
 
-    _breathController = AnimationController(vsync: this)
-      ..repeat(reverse: true);
+    _breathController = AnimationController(vsync: this);
 
     _transitionController = AnimationController(
       vsync: this,

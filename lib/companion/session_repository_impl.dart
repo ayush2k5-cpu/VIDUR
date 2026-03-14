@@ -1,20 +1,33 @@
 import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/contracts.dart';
 
+// Single shared instance — PIN survives across Navigator screen pushes.
+// Public so main.dart can wire it via ProviderScope.overrides.
+final sharedRepo = SessionRepositoryImpl._internal();
+
 final sessionRepositoryProvider = Provider<SessionRepository>((ref) {
-  return SessionRepositoryImpl();
+  return sharedRepo;
 });
 
 class SessionRepositoryImpl implements SessionRepository {
+  SessionRepositoryImpl._internal();
+
   final DatabaseReference _db = FirebaseDatabase.instance.ref('sessions/');
   String? _pin;
+
+  /// Exposed so that QrScannerScreen / createSession can stamp the PIN once.
+  void setPin(String pin) {
+    _pin = pin;
+    debugPrint('[SessionRepo] PIN set to $_pin');
+  }
 
   @override
   Future<String> createSession(String venueId) async {
     final pin = (Random().nextInt(9000) + 1000).toString();
-    _pin = pin;
+    setPin(pin);
     await _db.child(pin).set({
       'venueId': venueId,
       'createdAt': ServerValue.timestamp,
@@ -26,7 +39,7 @@ class SessionRepositoryImpl implements SessionRepository {
   Future<bool> joinSession(String pin) async {
     final snapshot = await _db.child(pin).get();
     if (snapshot.exists) {
-      _pin = pin;
+      setPin(pin);
       await _db.child(pin).update({
         'companionId': 'companion_${Random().nextInt(10000)}',
       });
@@ -37,11 +50,14 @@ class SessionRepositoryImpl implements SessionRepository {
 
   @override
   Stream<SessionState> get sessionUpdates {
-    if (_pin == null) return const Stream.empty();
-    
+    if (_pin == null) {
+      debugPrint('[SessionRepo] sessionUpdates: _pin is null, returning empty stream');
+      return const Stream.empty();
+    }
+    debugPrint('[SessionRepo] Subscribing to Firebase at sessions/$_pin');
     return _db.child(_pin!).onValue.map((event) {
       final data = event.snapshot.value as Map<dynamic, dynamic>? ?? {};
-      
+
       OrbState state = OrbState.safe;
       final orbStateRaw = data['orbState'] as String?;
       if (orbStateRaw == 'help') state = OrbState.help;
@@ -72,13 +88,14 @@ class SessionRepositoryImpl implements SessionRepository {
           requestedBy: requester,
           agoraChannel: peekRaw['agoraChannel'] as String?,
         );
+        debugPrint('[SessionRepo] peekState: active=${peekState.active} channel=${peekState.agoraChannel}');
       }
 
       return SessionState(
         orbState: state,
         position: pos,
         peekState: peekState,
-        lastMovement: DateTime.now(), 
+        lastMovement: DateTime.now(),
       );
     });
   }
@@ -125,6 +142,7 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<void> requestPeek(PeekRequester requester) async {
     if (_pin == null) return;
+    debugPrint('[SessionRepo] requestPeek by ${requester.name} on channel vidur_$_pin');
     await _db.child(_pin!).child('peekRequest').set({
       'active': true,
       'requestedBy': requester.name,

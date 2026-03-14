@@ -3,63 +3,63 @@
   "waypoints": [
     {
       "id": "waypoint_entrance",
-      "x": 0.0,
+      "x": 10.0,
       "y": 0.0,
       "floor": 0,
-      "label": "Main Entrance",
+      "label": "Lab Entrance",
       "isHangingObstacle": false
     },
     {
       "id": "waypoint_corridor_1",
-      "x": 12.0,
-      "y": 0.0,
+      "x": 20.0,
+      "y": 5.0,
       "floor": 0,
-      "label": "Corridor Section 1",
+      "label": "First Aisle",
       "isHangingObstacle": false
     },
     {
       "id": "waypoint_hanging_001",
-      "x": 24.0,
-      "y": 0.0,
+      "x": 30.0,
+      "y": 5.0,
       "floor": 0,
-      "label": "Hanging Obstacle Zone",
+      "label": "Low Beam Area",
       "isHangingObstacle": true
     },
     {
-      "id": "waypoint_junction",
+      "id": "waypoint_partition",
       "x": 30.0,
-      "y": 0.0,
+      "y": 10.0,
       "floor": 0,
-      "label": "Corridor Junction",
+      "label": "Section Opening",
       "isHangingObstacle": false
     },
     {
-      "id": "waypoint_lab_door",
-      "x": 38.0,
-      "y": 0.0,
+      "id": "waypoint_main",
+      "x": 25.0,
+      "y": 15.0,
       "floor": 0,
-      "label": "Lab Door",
+      "label": "Main Lab",
       "isHangingObstacle": false
     },
     {
-      "id": "waypoint_destination",
-      "x": 38.0,
-      "y": 8.0,
+      "id": "destination",
+      "x": 10.0,
+      "y": 15.0,
       "floor": 0,
-      "label": "Destination",
+      "label": "Teacher's Desk",
       "isHangingObstacle": false
     }
   ],
   "edges": [
-    { "fromId": "waypoint_entrance",      "toId": "waypoint_corridor_1",    "distanceMeters": 12.0 },
-    { "fromId": "waypoint_corridor_1",    "toId": "waypoint_entrance",      "distanceMeters": 12.0 },
-    { "fromId": "waypoint_corridor_1",    "toId": "waypoint_hanging_001",   "distanceMeters": 12.0 },
-    { "fromId": "waypoint_hanging_001",   "toId": "waypoint_corridor_1",    "distanceMeters": 12.0 },
-    { "fromId": "waypoint_hanging_001",   "toId": "waypoint_junction",      "distanceMeters": 6.0  },
-    { "fromId": "waypoint_junction",      "toId": "waypoint_hanging_001",   "distanceMeters": 6.0  },
-    { "fromId": "waypoint_junction",      "toId": "waypoint_lab_door",      "distanceMeters": 8.0  },
-    { "fromId": "waypoint_lab_door",      "toId": "waypoint_junction",      "distanceMeters": 8.0  },
-    { "fromId": "waypoint_lab_door",      "toId": "waypoint_destination",   "distanceMeters": 8.0  },
-    { "fromId": "waypoint_destination",   "toId": "waypoint_lab_door",      "distanceMeters": 8.0  }
+    { "fromId": "waypoint_entrance",    "toId": "waypoint_corridor_1",   "distanceMeters": 11.2 },
+    { "fromId": "waypoint_corridor_1",  "toId": "waypoint_entrance",     "distanceMeters": 11.2 },
+    { "fromId": "waypoint_corridor_1",  "toId": "waypoint_hanging_001",  "distanceMeters": 10.0 },
+    { "fromId": "waypoint_hanging_001", "toId": "waypoint_corridor_1",   "distanceMeters": 10.0 },
+    { "fromId": "waypoint_hanging_001", "toId": "waypoint_partition",    "distanceMeters": 5.0  },
+    { "fromId": "waypoint_partition",   "toId": "waypoint_hanging_001",  "distanceMeters": 5.0  },
+    { "fromId": "waypoint_partition",   "toId": "waypoint_main",         "distanceMeters": 7.1  },
+    { "fromId": "waypoint_main",        "toId": "waypoint_partition",    "distanceMeters": 7.1  },
+    { "fromId": "waypoint_main",        "toId": "destination",           "distanceMeters": 15.0 },
+    { "fromId": "destination",          "toId": "waypoint_main",         "distanceMeters": 15.0 }
   ]
 }

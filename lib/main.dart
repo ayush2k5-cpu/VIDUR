@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
-import 'package:vidur/companion/session_repository_impl.dart' hide sessionRepositoryProvider;
+import 'package:vidur/companion/session_repository_impl.dart' show sharedRepo;
 import 'package:vidur/core/providers.dart';
 import 'package:vidur/theme/theme.dart';
 import 'package:vidur/components/splash_screen.dart';
@@ -68,7 +68,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
         }
         return ProviderScope(
           overrides: [
-            sessionRepositoryProvider.overrideWithValue(SessionRepositoryImpl()),
+            sessionRepositoryProvider.overrideWith((_) => sharedRepo),
           ],
           child: const VidurApp(),
         );

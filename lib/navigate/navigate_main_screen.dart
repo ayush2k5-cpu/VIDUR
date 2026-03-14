@@ -28,6 +28,7 @@ import 'package:vidur/voice/audio_service.dart';
 import 'package:vidur/voice/providers.dart' as voice_providers;
 import 'package:vidur/voice/navigation_foreground_service.dart';
 import 'package:vidur/voice/volume_button_service.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 
 class NavigateMainScreen extends ConsumerStatefulWidget {
   const NavigateMainScreen({super.key});
@@ -53,9 +54,14 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
   // ── Stream subscriptions ──────────────────────────────────────────────────────
   StreamSubscription<NavigationInstruction>? _instructionSub;
   StreamSubscription<VidurPosition>? _positionSub;
+  StreamSubscription<SessionState>? _sessionSub;
 
   // ── Session PIN (needed for Firebase write in Phase 4) ────────────────────────
   String? _sessionPin;
+
+  // ── Agora Broadcaster (Guardian Peek) ─────────────────────────────────────────
+  RtcEngine? _agoraEngine;
+  bool _isBroadcasting = false;
 
   @override
   void initState() {
@@ -67,16 +73,35 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     // Capture the session PIN from the shared provider (set by QrScannerScreen)
     _sessionPin = ref.read(voice_providers.currentSessionPinProvider);
 
+    // Stamp PIN into the shared SessionRepository so sessionUpdates resolves
+    final sessionRepo = ref.read(sessionRepositoryProvider) as dynamic;
+    if (_sessionPin != null) {
+      try { sessionRepo.setPin(_sessionPin!); } catch (_) {}
+    }
+
     // Wire VolumeButtonService with all four callbacks
-    final sessionRepo = ref.read(sessionRepositoryProvider);
+    final typedRepo = ref.read(sessionRepositoryProvider);
 
     _volumeService = VolumeButtonService(
       onRepeatInstruction: _repeatInstruction,
       onSlowRepeat: _slowRepeatInstruction,
-      onHelpFired: () => sessionRepo.fireHelp(),
+      onHelpFired: () => typedRepo.fireHelp(),
       onNavigatorPeekRequest: () =>
-          sessionRepo.requestPeek(PeekRequester.navigator),
+          typedRepo.requestPeek(PeekRequester.navigator),
     );
+
+    // Listen to Firebase Session State changes (e.g. Guardian Peek triggers)
+    _sessionSub = typedRepo.sessionUpdates.listen((state) {
+      final active = state.peekState != null && 
+                     state.peekState!.active && 
+                     state.peekState!.agoraChannel != null;
+                     
+      if (active && !_isBroadcasting) {
+        _startBroadcasting(state.peekState!.agoraChannel!);
+      } else if (!active && _isBroadcasting) {
+        _stopBroadcasting();
+      }
+    });
 
     // Subscribe to position stream for hanging obstacle detection (Phase 4)
     final posStream = await ref.read(positionStreamProvider.future);
@@ -87,7 +112,8 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     _instructionSub = engine.instructions.listen(_onInstruction);
 
     // Phase 5 — keep navigation alive when backgrounded
-    await NavigationForegroundService.startService();
+    // try-catch: flutter_foreground_task crashes on Android 15.
+    try { await NavigationForegroundService.startService(); } catch (_) {}
   }
 
   // ── Instruction handler ───────────────────────────────────────────────────────
@@ -174,12 +200,56 @@ class _NavigateMainScreenState extends ConsumerState<NavigateMainScreen> {
     }
   }
 
+  // ── Guardian Peek Background Broadcast ────────────────────────────────────────
+
+  Future<void> _startBroadcasting(String channelId) async {
+    _isBroadcasting = true;
+    debugPrint('[Agora] Starting broadcast on channel: $channelId');
+    try {
+      _agoraEngine = createAgoraRtcEngine();
+      await _agoraEngine!.initialize(const RtcEngineContext(
+        appId: '68d3e5cc476148aa8fc35138f6a69bc9', // Real Agora App ID
+        channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      ));
+      await _agoraEngine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+      await _agoraEngine!.enableVideo();
+      await _agoraEngine!.startPreview();
+      await _agoraEngine!.joinChannel(
+        token: '',
+        channelId: channelId,
+        uid: 0,
+        options: const ChannelMediaOptions(
+          autoSubscribeVideo: false,
+          autoSubscribeAudio: false,
+          publishCameraTrack: true,
+          publishMicrophoneTrack: true,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        ),
+      );
+      debugPrint('[Agora] Broadcaster joined channel $channelId successfully');
+    } catch (e, st) {
+      debugPrint('[Agora] Error starting broadcast: $e\n$st');
+      _isBroadcasting = false;
+    }
+  }
+
+  Future<void> _stopBroadcasting() async {
+    _isBroadcasting = false;
+    if (_agoraEngine != null) {
+      await _agoraEngine!.leaveChannel();
+      await _agoraEngine!.release();
+      _agoraEngine = null;
+    }
+  }
+
   // ── Lifecycle ─────────────────────────────────────────────────────────────────
   @override
   void dispose() {
+    _stopBroadcasting();
     _volumeService?.dispose();
     _instructionSub?.cancel();
     _positionSub?.cancel();
+    _sessionSub?.cancel();
     _audio.dispose();
     NavigationForegroundService.stopService();
     super.dispose();

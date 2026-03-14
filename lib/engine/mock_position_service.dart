@@ -29,7 +29,7 @@ class MockPositionService implements PositionStream {
   @override
   Future<void> initialize(VenueMap venue) async {
     _controller ??= StreamController<VidurPosition>.broadcast();
-    _timer = Timer.periodic(const Duration(seconds: 2), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) {
       _controller!.add(_loop[_index % _loop.length]);
       _index++;
     });
