@@ -19,7 +19,12 @@ migrate_working_dir/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+# Excluded here for consistency with other Ojas projects (personal editor config, not shared).
+.vscode/
+
+# Debug/crash logs (adb logcat dumps etc.) — *.log already covers .log files,
+# these ones showed up as .txt
+log-*.txt
 
 # Flutter/Dart/Pub related
 **/doc/api/
