@@ -50,3 +50,7 @@ app.*.map.json
 # Firebase — never commit
 google-services.json
 GoogleService-Info.plist
+
+# Graphify local knowledge-graph output (regenerated; canonical copy lives in
+# Ojas vault/graph-imports/VIDUR/)
+graphify-out/
